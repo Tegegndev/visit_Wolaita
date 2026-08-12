@@ -1,9 +1,20 @@
+import os
+import uuid
+
 import requests
 from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
 
 TRYON_API_URL = "https://gunguzameai5.lovable.app/api/public/tryon"
+
+EXT_BY_CONTENT_TYPE = {
+    "image/png": ".png",
+    "image/jpeg": ".jpg",
+    "image/jpg": ".jpg",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+}
 
 
 @app.route("/")
@@ -33,7 +44,31 @@ def tryon():
     except requests.RequestException as e:
         return jsonify({"error": f"Generation service error: {e}"}), 502
 
-    return jsonify(resp.json())
+    result = resp.json()
+
+    image_url = result.get("imageUrl")
+    if image_url:
+        saved_url = save_generated_image(image_url)
+        if saved_url:
+            result["imageUrl"] = saved_url
+            result["downloadUrl"] = saved_url
+
+    return jsonify(result)
+
+
+def save_generated_image(image_url):
+    try:
+        img_resp = requests.get(image_url, timeout=120)
+        img_resp.raise_for_status()
+        content_type = img_resp.headers.get("Content-Type", "").split(";")[0].strip()
+        ext = EXT_BY_CONTENT_TYPE.get(content_type, ".png")
+        filename = f"generated_{uuid.uuid4().hex}{ext}"
+        filepath = os.path.join(app.root_path, "static", "images", filename)
+        with open(filepath, "wb") as f:
+            f.write(img_resp.content)
+        return f"/static/images/{filename}"
+    except requests.RequestException:
+        return None
 
 
 if __name__ == "__main__":
