@@ -2,3 +2,5 @@ mypyenv/
 __pycache__/
 *.pyc
 .env
+AGENTS.md
+generated_images/
