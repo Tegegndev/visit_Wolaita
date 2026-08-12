@@ -286,6 +286,16 @@
    </footer>
 
 
+    <div id="rateLimitModal" class="rate-limit-modal" aria-hidden="true">
+        <div class="rate-limit-modal-content" role="dialog" aria-modal="true" aria-labelledby="rateLimitTitle">
+            <button type="button" class="rate-limit-modal-close" id="rateLimitClose" aria-label="Close"><i class="fas fa-times"></i></button>
+            <i class="fas fa-hourglass-half rate-limit-icon"></i>
+            <h3 id="rateLimitTitle">Generation Limit Reached</h3>
+            <p>You've reached the limit of <strong>2 generations per hour</strong>. Please come back later to try on more Wolaita styles!</p>
+            <button type="button" class="rate-limit-ok-btn" id="rateLimitOk">OK</button>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
     <script>

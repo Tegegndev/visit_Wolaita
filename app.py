@@ -3,8 +3,19 @@ import uuid
 
 import requests
 from flask import Flask, jsonify, render_template, request, send_from_directory
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
+
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    storage_uri="memory://",
+    default_limits=[],
+)
 
 TRYON_API_URL = "https://gunguzameai5.lovable.app/api/public/tryon"
 GENERATED_IMAGES_DIR = os.path.join(app.root_path, "generated_images")
@@ -34,6 +45,7 @@ def about():
 
 
 @app.route("/api/tryon", methods=["POST"])
+@limiter.limit("2 per hour")
 def tryon():
     data = request.get_json(silent=True)
     if not data or not data.get("garmentId") or not data.get("personImage"):
@@ -55,6 +67,11 @@ def tryon():
             result["downloadUrl"] = saved_url
 
     return jsonify(result)
+
+
+@app.errorhandler(429)
+def ratelimit_handler(_e):
+    return jsonify({"error": "Rate limit reached. You can generate 2 images per hour. Please try again later."}), 429
 
 
 @app.route("/generated_images/<path:filename>")

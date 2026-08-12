@@ -1295,3 +1295,100 @@ footer h4 a:hover {
     cursor: not-allowed;
     transform: none !important;
 }
+
+/* Rate limit modal */
+.rate-limit-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.rate-limit-modal.show {
+    display: flex;
+}
+
+.rate-limit-modal-content {
+    background: #fff;
+    border-radius: 16px;
+    padding: 40px 36px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+    animation: rateLimitIn 0.25s ease;
+}
+
+@keyframes rateLimitIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.rate-limit-icon {
+    font-size: 3rem;
+    color: #8b0000;
+    margin-bottom: 12px;
+}
+
+.rate-limit-modal-content h3 {
+    color: #8b0000;
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.rate-limit-modal-content p {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.rate-limit-ok-btn {
+    background: linear-gradient(135deg, #8b0000, #a30000);
+    color: white;
+    border: none;
+    padding: 10px 32px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 4px 12px rgba(139, 0, 0, 0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.rate-limit-ok-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 18px rgba(139, 0, 0, 0.45);
+}
+
+.rate-limit-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.rate-limit-modal-close:hover {
+    color: #8b0000;
+}

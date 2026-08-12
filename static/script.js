@@ -17,6 +17,10 @@ const generationText = document.getElementById('generationText');
 const resultView = document.getElementById('resultView');
 const resultImage = document.getElementById('resultImage');
 
+const rateLimitModal = document.getElementById('rateLimitModal');
+const rateLimitClose = document.getElementById('rateLimitClose');
+const rateLimitOk = document.getElementById('rateLimitOk');
+
 const API_URL = '/api/tryon';
 const LOADING_MESSAGES = [
     'Clothing you up...',
@@ -111,6 +115,23 @@ function showError(message) {
     compareView.style.display = 'flex';
 }
 
+function showRateLimitModal() {
+    hideLoading();
+    rateLimitModal.classList.add('show');
+    rateLimitModal.setAttribute('aria-hidden', 'false');
+}
+
+function hideRateLimitModal() {
+    rateLimitModal.classList.remove('show');
+    rateLimitModal.setAttribute('aria-hidden', 'true');
+}
+
+rateLimitClose.addEventListener('click', hideRateLimitModal);
+rateLimitOk.addEventListener('click', hideRateLimitModal);
+rateLimitModal.addEventListener('click', (e) => {
+    if (e.target === rateLimitModal) hideRateLimitModal();
+});
+
 generateBtn.addEventListener('click', async () => {
     if (!uploadedDataUrl) {
         alert('Please upload your photo first.');
@@ -134,6 +155,10 @@ generateBtn.addEventListener('click', async () => {
         });
 
         if (!res.ok) {
+            if (res.status === 429) {
+                showRateLimitModal();
+                return;
+            }
             let message = 'Something went wrong. Please try again.';
             try {
                 const err = await res.json();
