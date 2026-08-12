@@ -2,11 +2,12 @@ import os
 import uuid
 
 import requests
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, send_from_directory
 
 app = Flask(__name__)
 
 TRYON_API_URL = "https://gunguzameai5.lovable.app/api/public/tryon"
+GENERATED_IMAGES_DIR = os.path.join(app.root_path, "generated_images")
 
 EXT_BY_CONTENT_TYPE = {
     "image/png": ".png",
@@ -56,6 +57,11 @@ def tryon():
     return jsonify(result)
 
 
+@app.route("/generated_images/<path:filename>")
+def generated_images(filename):
+    return send_from_directory(GENERATED_IMAGES_DIR, filename)
+
+
 def save_generated_image(image_url):
     try:
         img_resp = requests.get(image_url, timeout=120)
@@ -63,10 +69,10 @@ def save_generated_image(image_url):
         content_type = img_resp.headers.get("Content-Type", "").split(";")[0].strip()
         ext = EXT_BY_CONTENT_TYPE.get(content_type, ".png")
         filename = f"generated_{uuid.uuid4().hex}{ext}"
-        filepath = os.path.join(app.root_path, "static", "images", filename)
+        filepath = os.path.join(GENERATED_IMAGES_DIR, filename)
         with open(filepath, "wb") as f:
             f.write(img_resp.content)
-        return f"/static/images/{filename}"
+        return f"/generated_images/{filename}"
     except requests.RequestException:
         return None
 
